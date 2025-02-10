@@ -1,0 +1,89 @@
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class SOCKScorchMarks : PartModule
+{
+    private Material partMaterial;
+    private Texture scorchTexture;
+    private float scorchLevel = 0f; // 0 = no scorch, 1 = fully scorched
+    private bool isScorching = false;
+    private Dictionary<string, Texture> scorchTextures = new Dictionary<string, Texture>();
+
+    public override void OnStart(StartState state)
+    {
+        base.OnStart(state);
+
+        Renderer renderer = part.FindModelComponent<Renderer>();
+        if (renderer != null)
+        {
+            partMaterial = renderer.material;
+            string baseTextureName = GetActiveTextureName(renderer);
+
+            // Load scorch textures mapped to B9PS textures
+            scorchTextures["SOCK_White"] = GameDatabase.Instance.GetTexture("YourMod/Textures/Scorch_White", false);
+            scorchTextures["SOCK_Black"] = GameDatabase.Instance.GetTexture("YourMod/Textures/Scorch_Black", false);
+            scorchTextures["SOCK_Gray"] = GameDatabase.Instance.GetTexture("YourMod/Textures/Scorch_Gray", false);
+
+            // Default scorch texture
+            Texture defaultScorch = GameDatabase.Instance.GetTexture("YourMod/Textures/DefaultScorch", false);
+
+            // Assign the correct scorch texture
+            scorchTexture = scorchTextures.ContainsKey(baseTextureName) ? scorchTextures[baseTextureName] : defaultScorch;
+            partMaterial.SetTexture("_DetailTex", scorchTexture);
+            partMaterial.SetFloat("_BlendFactor", 0f); // Start with no scorch
+        }
+    }
+
+    public void Update()
+    {
+        if (IsReentryHappening() && !isScorching)
+        {
+            isScorching = true;
+            StartCoroutine(ApplyScorchOverTime());
+        }
+    }
+
+    private bool IsReentryHappening()
+    {
+        // Check if vessel is in an atmosphere
+        if (vessel == null || !vessel.mainBody.atmosphere)
+            return false;
+
+        // Check velocity relative to planet (m/s)
+        double velocity = vessel.srfSpeed;
+        
+        // Check atmospheric density (higher = deeper atmosphere)
+        double atmoDensity = vessel.atmDensity;
+
+        // Determine if reentry is happening (adjust values as needed)
+        return velocity > 1200 && atmoDensity > 0.05;
+    }
+
+    private IEnumerator ApplyScorchOverTime()
+    {
+        while (scorchLevel < 1f)
+        {
+            scorchLevel += Time.deltaTime * 0.1f; // Adjust speed as needed
+            ApplyScorchMarks();
+            yield return null;
+        }
+    }
+
+    private void ApplyScorchMarks()
+    {
+        if (partMaterial != null)
+        {
+            partMaterial.SetFloat("_BlendFactor", scorchLevel); // Blend clean → scorched
+        }
+    }
+
+    private string GetActiveTextureName(Renderer renderer)
+    {
+        if (renderer.material.mainTexture != null)
+        {
+            return renderer.material.mainTexture.name;
+        }
+        return "Default";
+    }
+}
