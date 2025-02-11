@@ -1,0 +1,7 @@
+C:\Users\edoua\Documents\GitHub\Charred-Skies\GameData\KiverixScorch\Plugins\ScorchMod\obj\Debug\ScorchMod.csproj.AssemblyReference.cache
+C:\Users\edoua\Documents\GitHub\Charred-Skies\GameData\KiverixScorch\Plugins\ScorchMod\obj\Debug\ScorchMod.csproj.CoreCompileInputs.cache
+C:\Users\edoua\Desktop\testing\ScorchMod.dll
+C:\Users\edoua\Desktop\testing\ScorchMod.pdb
+C:\Users\edoua\Documents\GitHub\Charred-Skies\GameData\KiverixScorch\Plugins\ScorchMod\obj\Debug\ScorchMod.csproj.CopyComplete
+C:\Users\edoua\Documents\GitHub\Charred-Skies\GameData\KiverixScorch\Plugins\ScorchMod\obj\Debug\ScorchMod.dll
+C:\Users\edoua\Documents\GitHub\Charred-Skies\GameData\KiverixScorch\Plugins\ScorchMod\obj\Debug\ScorchMod.pdb

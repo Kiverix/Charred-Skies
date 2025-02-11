@@ -44,6 +44,7 @@ public class SOCKScorchMarks : PartModule
 
     private bool IsReentryHappening()
     {
+        Debug.Log($"[KiverixScorch] Velocity: {vessel.srfSpeed}, AtmoDensity: {vessel.atmDensity}");
         // Ensure vessel exists and is in an atmosphere
         if (vessel == null || !vessel.mainBody.atmosphere)
             return false;
@@ -68,6 +69,7 @@ public class SOCKScorchMarks : PartModule
 
     private void ApplyScorchMarks()
     {
+        Debug.Log($"[KiverixScorch] Scorch Level: {scorchLevel}");
         // Update the material property to make the scorch marks visible
         if (partMaterial != null)
         {
