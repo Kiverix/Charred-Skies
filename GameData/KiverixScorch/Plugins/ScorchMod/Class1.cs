@@ -12,6 +12,7 @@ public class SOCKScorchMarks : PartModule
     public override void OnStart(StartState state)
     {
         base.OnStart(state);
+        Debug.Log("[KiverixScorch] Mod initialized on part: " + part.partInfo.title);
 
         // Get the part's renderer component to access its material
         Renderer renderer = part.FindModelComponent<Renderer>();
@@ -23,42 +24,48 @@ public class SOCKScorchMarks : PartModule
             scorchTextureUV1 = GameDatabase.Instance.GetTexture("KiverixScorch/Textures/shuttleUV1_diff_Discovery", false);
             scorchTextureUV2 = GameDatabase.Instance.GetTexture("KiverixScorch/Textures/shuttleUV2_diff_Discovery", false);
 
-            // Apply the initial texture and ensure the scorch effect is invisible at start
             if (scorchTextureUV1 != null && scorchTextureUV2 != null)
             {
-                partMaterial.SetTexture("_DetailTex", scorchTextureUV1); // Default to UV1 texture
+                Debug.Log("[KiverixScorch] Scorch textures loaded successfully.");
+                partMaterial.SetTexture("_DetailTex", scorchTextureUV1);
                 partMaterial.SetFloat("_DetailBlend", 0f);  // Start with no scorch marks
             }
+            else
+            {
+                Debug.LogError("[KiverixScorch] Error loading scorch textures!");
+            }
+        }
+        else
+        {
+            Debug.LogError("[KiverixScorch] Renderer not found!");
         }
     }
 
     public void Update()
     {
-        // Check if reentry conditions are met and start scorch effect if not already triggered
         if (IsReentryHappening() && !isScorching)
         {
             isScorching = true;
+            Debug.Log("[KiverixScorch] Reentry detected! Starting scorch effect...");
             StartCoroutine(ApplyScorchOverTime());
         }
     }
 
     private bool IsReentryHappening()
     {
-        // Ensure vessel exists and is in an atmosphere
         if (vessel == null || !vessel.mainBody.atmosphere)
             return false;
 
         double velocity = vessel.srfSpeed; // Get surface speed
         double atmoDensity = vessel.atmDensity; // Get atmospheric density
 
-        // Check if velocity and atmospheric density indicate reentry conditions
-        return velocity > 2800 && atmoDensity > 0.02; // Adjusted for KSRSS reentry speeds
-        Debug.Log($"[KiverixScorch] Velocity: {vessel.srfSpeed}, AtmoDensity: {vessel.atmDensity}");
+        Debug.Log($"[KiverixScorch] Checking Reentry - Velocity: {velocity}, Atmosphere Density: {atmoDensity}");
+
+        return velocity > 2800 && atmoDensity > 0.02; // Adjusted for KSRSS
     }
 
     private IEnumerator ApplyScorchOverTime()
     {
-        // Gradually increase the scorch effect over time
         while (scorchLevel < 1f)
         {
             scorchLevel += Time.deltaTime * 0.05f;
@@ -69,11 +76,10 @@ public class SOCKScorchMarks : PartModule
 
     private void ApplyScorchMarks()
     {
-        // Update the material property to make the scorch marks visible
         if (partMaterial != null)
         {
-            partMaterial.SetFloat("_DetailBlend", scorchLevel); // Fade in scorch effect over time
+            partMaterial.SetFloat("_DetailBlend", scorchLevel);
+            Debug.Log($"[KiverixScorch] Scorch Level Updated: {scorchLevel}");
         }
-        Debug.Log($"[KiverixScorch] Scorch Level: {scorchLevel}");
     }
 }
